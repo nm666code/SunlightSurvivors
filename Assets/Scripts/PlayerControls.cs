@@ -33,6 +33,27 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Print out the debug messages to test if player collides with any object.
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Collided with an enemy object");
+        }
+        else if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            Debug.Log("Collided with an obstacle object");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "Powerup")
+        {
+            Debug.Log("Picked up a powerup object");
+        }
+    }
+
     private IEnumerator PauseRestartCoroutine()
     {
         yield return new WaitForSeconds(10);
