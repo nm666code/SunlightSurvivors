@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 6407219803588221135}
   - component: {fileID: 5013584301962481154}
   - component: {fileID: 701070598296173862}
-  - component: {fileID: 9116390600787013631}
   - component: {fileID: 4460751048663699238}
+  - component: {fileID: -4549494969345539798}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1e17a3b7fce3904899ea2548df862af, type: 2}
+  - {fileID: 2100000, guid: 21295076418414845b4f61aa75e89b39, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114,110 +114,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &9116390600787013631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4166411295843701647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b5487310fbd9f14f859bf8bcc01775d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerControls
-  playerSpeed: 8
-  controller:
-    m_Name: Controller
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: beb57466-33e0-4ff5-8390-129528ab96ed
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 2D Vector
-      m_Id: 8f2c08c8-5e23-4b50-b983-5049360c4f77
-      m_Path: 2DVector
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 4
-    - m_Name: up
-      m_Id: 1388e331-418d-4788-9d0d-efcb1ed03e48
-      m_Path: <Keyboard>/w
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: down
-      m_Id: 3d2efb70-6db8-4bcc-be6b-e737476bc64b
-      m_Path: <Keyboard>/s
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: left
-      m_Id: 3d844c9e-1783-4a60-81a8-cffe4b523496
-      m_Path: <Keyboard>/a
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: right
-      m_Id: cc2ab716-a139-4d15-bbc0-9da189c18a3c
-      m_Path: <Keyboard>/d
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: 2D Vector
-      m_Id: e6e6dd8c-4fb7-46c6-bad9-8af9ca1f82e6
-      m_Path: 2DVector
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 4
-    - m_Name: up
-      m_Id: 69807d93-81ca-47b8-a651-f374c9e87c49
-      m_Path: <Keyboard>/upArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: down
-      m_Id: c3573647-c7c7-459e-a4b8-6a7cec65e13d
-      m_Path: <Keyboard>/downArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: left
-      m_Id: beffb9bc-0ed2-4bf8-88af-28a7ef5e855d
-      m_Path: <Keyboard>/leftArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    - m_Name: right
-      m_Id: 09137914-893a-4d48-9b9b-314734cecb49
-      m_Path: <Keyboard>/rightArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Controller
-      m_Flags: 8
-    m_Flags: 0
-    m_Priority: 0
-  dir2D: {x: 0, y: 0}
 --- !u!54 &4460751048663699238
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -243,5 +139,18 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &-4549494969345539798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4166411295843701647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3742c11de6f6f93439484b8713adaff4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScript
+  moveSpeed: 5

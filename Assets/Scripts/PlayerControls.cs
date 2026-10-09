@@ -9,13 +9,13 @@ public class PlayerControls : MonoBehaviour
     public float playerSpeed;
     public InputAction controller;
     public Vector2 dir2D;
-    private Rigidbody playerRB; // Will be used for collision detection for enemy entities
+    private Rigidbody playerBox; // Will be used for collision detection for enemy entities
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         controller.Enable();
-        playerRB = GetComponent<Rigidbody>();
+        playerBox = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -33,16 +33,20 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
         // Print out the debug messages to test if player collides with any object.
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (other.gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Collided with an enemy object");
         }
-        else if (collision.gameObject.CompareTag("Obstacle"))
+        else if (other.gameObject.CompareTag("Obstacle"))
         {
             Debug.Log("Collided with an obstacle object");
+        }
+        else if (other.gameObject.name == "Dummy")
+        {
+            Debug.Log("Collided with a dummy object");
         }
     }
 
