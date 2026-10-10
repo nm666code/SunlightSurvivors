@@ -6,6 +6,7 @@ public class EnemyScript : MonoBehaviour
     public float moveSpeed;
     private Rigidbody enemyBox;
     private GameObject playerObj;
+    public float jumpHeight = 1.0f; // Let's make the enemy jump when they touch bouncy tiles, shall we?
     void Start()
     {
         enemyBox = GetComponent<Rigidbody>();
@@ -22,6 +23,14 @@ public class EnemyScript : MonoBehaviour
         if (transform.position.y < -15)
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Bouncy"))
+        {
+            enemyBox.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
         }
     }
 }

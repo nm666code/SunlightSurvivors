@@ -10,6 +10,7 @@ public class PlayerControls : MonoBehaviour
     public InputAction controller;
     public Vector2 dir2D;
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
+    public float jumpHeight = 10.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,26 +34,31 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter(Collision collision)
     {
         // Print out the debug messages to test if player collides with any object.
-        if (other.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Collided with an enemy object");
         }
-        else if (other.gameObject.CompareTag("Obstacle"))
+        else if (collision.gameObject.CompareTag("Obstacle"))
         {
             Debug.Log("Collided with an obstacle object");
         }
-        else if (other.gameObject.name == "Dummy")
+        else if (collision.gameObject.name == "Dummy")
         {
             Debug.Log("Collided with a dummy object");
         }
+        else if (collision.gameObject.CompareTag("Bouncy"))
+        {
+            Debug.Log("Bounced off a bouncy object!");
+            playerBox.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider collision)
     {
-        if (other.gameObject.name == "Powerup")
+        if (collision.gameObject.name == "Powerup")
         {
             Debug.Log("Picked up a powerup object");
         }
