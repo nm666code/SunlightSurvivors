@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem; // Needed to allow the player to move
-using UnityEngine.SceneManagement; // Needed to load levels and restart current level
 
 public class PlayerControls : MonoBehaviour
 {
@@ -11,6 +8,7 @@ public class PlayerControls : MonoBehaviour
     public Vector2 dir2D;
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
     public float jumpHeight = 10.0f;
+    private bool isDead;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,21 +23,13 @@ public class PlayerControls : MonoBehaviour
         dir2D = controller.ReadValue<Vector2>();
         transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed * dir2D.y);
         transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
-
-        if (transform.position.y <= -10)
-        {
-            Debug.Log("You died!");
-            StartCoroutine(PauseRestartCoroutine());
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Print out the debug messages to test if player collides with any object.
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (IsFatalObject(collision.gameObject))
         {
-            Debug.Log("Collided with an enemy object");
+            Die();
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
@@ -58,14 +48,31 @@ public class PlayerControls : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.name == "Powerup")
+        if (IsFatalObject(collision.gameObject))
+        {
+            Die();
+        }
+        else if (collision.gameObject.name == "Powerup")
         {
             Debug.Log("Picked up a powerup object");
         }
     }
 
-    private IEnumerator PauseRestartCoroutine()
+    private bool IsFatalObject(GameObject other)
     {
-        yield return new WaitForSeconds(10);
+        return other.CompareTag("Enemy") || other.name == "sunlight";
+    }
+
+    private void Die()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
+        Debug.Log("You died!");
+        controller.Disable();
+        Time.timeScale = 0f;
     }
 }
