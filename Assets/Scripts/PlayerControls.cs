@@ -56,6 +56,10 @@ public class PlayerControls : MonoBehaviour
         {
             Debug.Log("Picked up a powerup object");
         }
+        else if (collision.gameObject.CompareTag("Safe"))
+        {
+            Debug.Log("Standing on the safe zone");
+        }
     }
 
     private bool IsFatalObject(GameObject other)

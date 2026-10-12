@@ -9,6 +9,7 @@ TagManager:
   - Bouncy
   - Powerup
   - Dummy
+  - Safe
   layers:
   - Default
   - TransparentFX
