@@ -16,7 +16,8 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Make the enemy object follow the player.
+        // Make the enemy object follow the player by using MoveTowards.
+        // transform.position = Vector3.MoveTowards(transform.position, playerObj.transform.position, moveSpeed * Time.deltaTime);
         Vector3 vectorDir = (playerObj.transform.position - transform.position).normalized;
         enemyBox.AddForce(vectorDir * moveSpeed);
 

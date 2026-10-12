@@ -45,7 +45,7 @@ public class PlayerControls : MonoBehaviour
         {
             Debug.Log("Collided with an obstacle object");
         }
-        else if (collision.gameObject.name == "Dummy")
+        else if (collision.gameObject.CompareTag("Dummy"))
         {
             Debug.Log("Collided with a dummy object");
         }
@@ -58,9 +58,13 @@ public class PlayerControls : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.name == "Powerup")
+        if (collision.gameObject.CompareTag("Powerup"))
         {
             Debug.Log("Picked up a powerup object");
+        }
+        else if (collision.gameObject.CompareTag("Safe"))
+        {
+            Debug.Log("Standing in a safe zone");
         }
     }
 
