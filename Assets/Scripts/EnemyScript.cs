@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyScript : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public float moveSpeed;
+    [SerializeField] private float moveSpeed = 3f;
     private Rigidbody enemyBox;
     private GameObject playerObj;
     public float jumpHeight = 1.0f; // Let's make the enemy jump when they touch bouncy tiles, shall we?
@@ -14,16 +14,18 @@ public class EnemyScript : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        // Make the enemy object follow the player.
-        Vector3 vectorDir = (playerObj.transform.position - transform.position).normalized;
-        enemyBox.AddForce(vectorDir * moveSpeed);
+        Vector3 direction = playerObj.transform.position - transform.position;
+        direction.y = 0f;
 
-        if (transform.position.y < -15)
-        {
-            Destroy(gameObject);
-        }
+        Vector3 horizontalVelocity = direction.normalized * moveSpeed;
+
+        enemyBox.linearVelocity = new Vector3(
+            horizontalVelocity.x,
+            enemyBox.linearVelocity.y,
+            horizontalVelocity.z
+        );
     }
 
     private void OnCollisionEnter(Collision collision)

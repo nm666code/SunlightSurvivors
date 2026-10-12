@@ -63,6 +63,11 @@ public class PlayerControls : MonoBehaviour
         return other.CompareTag("Enemy") || other.name == "sunlight";
     }
 
+    public void Kill()
+    {
+        Die();
+    }
+
     private void Die()
     {
         if (isDead)
@@ -73,6 +78,7 @@ public class PlayerControls : MonoBehaviour
         isDead = true;
         Debug.Log("You died!");
         controller.Disable();
+        GameOverUI.Show();
         Time.timeScale = 0f;
     }
 }
