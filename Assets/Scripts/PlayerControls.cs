@@ -35,7 +35,7 @@ public class PlayerControls : MonoBehaviour
         {
             Debug.Log("Collided with an obstacle object");
         }
-        else if (collision.gameObject.name == "Dummy")
+        else if (collision.gameObject.CompareTag("Dummy"))
         {
             Debug.Log("Collided with a dummy object");
         }
@@ -52,7 +52,7 @@ public class PlayerControls : MonoBehaviour
         {
             Die();
         }
-        else if (collision.gameObject.name == "Powerup")
+        else if (collision.gameObject.CompareTag("Powerup"))
         {
             Debug.Log("Picked up a powerup object");
         }
