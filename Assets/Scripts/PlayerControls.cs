@@ -64,7 +64,8 @@ public class PlayerControls : MonoBehaviour
 
     private bool IsFatalObject(GameObject other)
     {
-        return other.CompareTag("Enemy") || other.name == "sunlight";
+        // Frozen enemies are harmless statues until time resumes.
+        return (other.CompareTag("Enemy") && !TimeFreeze.IsFrozen) || other.name == "sunlight";
     }
 
     public void Kill()
