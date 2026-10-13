@@ -7,10 +7,9 @@ TagManager:
   - Obstacle
   - Enemy
   - Bouncy
-  - Projectile
-  - Safe
-  - Dummy
   - Powerup
+  - Dummy
+  - Safe
   layers:
   - Default
   - TransparentFX
