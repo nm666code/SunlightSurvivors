@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GunBullet : MonoBehaviour
 {
+    [SerializeField, Min(0.001f)] private float hitRadius = 0.08f;
     private Transform owner;
     private Vector3 direction;
     private float speed;
@@ -23,7 +24,7 @@ public class GunBullet : MonoBehaviour
         if (owner == null) { Destroy(gameObject); return; }
         float step = Mathf.Min(speed * Time.deltaTime, remainingRange);
         // Sweep the full travel distance to avoid passing through enemies between frames.
-        RaycastHit[] hits = Physics.SphereCastAll(transform.position, 0.08f, direction, step,
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, hitRadius, direction, step,
             Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (RaycastHit hit in hits)

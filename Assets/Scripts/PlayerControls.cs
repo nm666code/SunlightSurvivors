@@ -8,6 +8,8 @@ public class PlayerControls : MonoBehaviour
     public Vector2 dir2D;
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
     public float jumpHeight = 10.0f;
+    [SerializeField, Min(0.1f)] private float fallDeathDistance = 5f;
+    private float groundHeight;
     private bool isDead;
     public bool IsDead => isDead;
 
@@ -16,15 +18,21 @@ public class PlayerControls : MonoBehaviour
     {
         controller.Enable();
         playerBox = GetComponent<Rigidbody>();
-        if (GetComponent<AutoGun>() == null)
-        {
-            gameObject.AddComponent<AutoGun>();
-        }
+        GameObject level = GameObject.Find("Level");
+        Collider ground = level != null ? level.GetComponent<Collider>() : null;
+        groundHeight = ground != null ? ground.bounds.min.y : transform.position.y;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isDead || Time.timeScale == 0f) return;
+        if (transform.position.y < groundHeight - fallDeathDistance)
+        {
+            Die();
+            return;
+        }
+
         dir2D = controller.ReadValue<Vector2>();
         transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed * dir2D.y);
         transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
