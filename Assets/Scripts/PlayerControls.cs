@@ -9,12 +9,17 @@ public class PlayerControls : MonoBehaviour
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
     public float jumpHeight = 10.0f;
     private bool isDead;
+    public bool IsDead => isDead;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         controller.Enable();
         playerBox = GetComponent<Rigidbody>();
+        if (GetComponent<AutoGun>() == null)
+        {
+            gameObject.AddComponent<AutoGun>();
+        }
     }
 
     // Update is called once per frame
