@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem; // Needed to allow the player to move
 
@@ -5,13 +6,16 @@ public class PlayerControls : MonoBehaviour
 {
     public float playerSpeed;
     public InputAction controller;
-    public Vector2 dir2D;
+    private Vector2 dir2D;
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
     public float jumpHeight = 10.0f;
     [SerializeField, Min(0.1f)] private float fallDeathDistance = 5f;
     private float groundHeight;
     private bool isDead;
     public bool IsDead => isDead;
+    public bool isInvulnerable; // If true, the player can't be harmed by an enemy or hazard.
+    private Renderer playerRenderer;
+    public Material normalColor, invulnerableAura;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,6 +25,9 @@ public class PlayerControls : MonoBehaviour
         GameObject level = GameObject.Find("Level");
         Collider ground = level != null ? level.GetComponent<Collider>() : null;
         groundHeight = ground != null ? ground.bounds.min.y : transform.position.y;
+        playerRenderer = GetComponent<Renderer>();
+        playerRenderer.material = normalColor;
+        isInvulnerable = false;
     }
 
     // Update is called once per frame
@@ -38,9 +45,10 @@ public class PlayerControls : MonoBehaviour
         transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
     }
 
+    // The player dies if it collides with an enemy, and the invulnerability powerup isn't active.
     private void OnCollisionEnter(Collision collision)
     {
-        if (IsFatalObject(collision.gameObject))
+        if (IsFatalObject(collision.gameObject) && !isInvulnerable)
         {
             Die();
         }
@@ -65,9 +73,14 @@ public class PlayerControls : MonoBehaviour
         {
             Die();
         }
-        else if (collision.gameObject.CompareTag("Powerup"))
+        // Don't pickup another invulnerability powerup if the player is currently invulnerable.
+        else if (collision.gameObject.CompareTag("Powerup") && !isInvulnerable)
         {
-            Debug.Log("Picked up a powerup object");
+            Debug.Log("Picked up a powerup object and became invincible!");
+            isInvulnerable = true;
+            playerRenderer.material = invulnerableAura;
+            Destroy(collision.gameObject);
+            StartCoroutine(InvulnerableCoroutine());
         }
         else if (collision.gameObject.CompareTag("Safe"))
         {
@@ -97,5 +110,13 @@ public class PlayerControls : MonoBehaviour
         controller.Disable();
         GameOverUI.Show();
         Time.timeScale = 0f;
+    }
+
+    // After that number of seconds have passed in that coroutine, disable the invulnerability powerup.
+    IEnumerator InvulnerableCoroutine()
+    {
+        yield return new WaitForSeconds(7.5f);
+        isInvulnerable = false;
+        playerRenderer.material = normalColor;
     }
 }
