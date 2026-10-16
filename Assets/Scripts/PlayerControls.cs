@@ -16,6 +16,10 @@ public class PlayerControls : MonoBehaviour
     public bool isInvulnerable; // If true, the player can't be harmed by an enemy or hazard.
     private Renderer playerRenderer;
     public Material normalColor, invulnerableAura;
+    private bool isSafe = false;
+    private bool isSlippery = false;
+    private Vector3 currentVelocity = Vector3.zero;
+    public float slipperyAcceleration = 2f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,8 +45,27 @@ public class PlayerControls : MonoBehaviour
         }
 
         dir2D = controller.ReadValue<Vector2>();
-        transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed * dir2D.y);
-        transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
+
+        Vector3 targetVelocity = new Vector3(
+            dir2D.x,
+            0f,
+            dir2D.y
+        ) * playerSpeed;
+
+        if (isSlippery)
+        {
+            currentVelocity = Vector3.MoveTowards(
+                currentVelocity,
+                targetVelocity,
+                slipperyAcceleration * Time.deltaTime
+            );
+        }
+        else
+        {
+            currentVelocity = targetVelocity;
+        }
+
+        transform.Translate(currentVelocity * Time.deltaTime, Space.World);
     }
 
     // The player dies if it collides with an enemy, and the invulnerability powerup isn't active.
@@ -84,13 +107,28 @@ public class PlayerControls : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Safe"))
         {
+            isSafe = true;
             Debug.Log("Standing on the safe zone");
+        }
+    }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("Safe"))
+        {
+            isSafe = false;
+            Debug.Log("Left the safe zone");
         }
     }
 
     private bool IsFatalObject(GameObject other)
     {
         return other.CompareTag("Enemy") || other.name == "sunlight";
+    }
+
+    public void SetSlippery(bool slippery)
+    {
+        isSlippery = slippery;
     }
 
     public void Kill()
@@ -100,7 +138,7 @@ public class PlayerControls : MonoBehaviour
 
     private void Die()
     {
-        if (isDead)
+        if (isDead || isSafe)
         {
             return;
         }
