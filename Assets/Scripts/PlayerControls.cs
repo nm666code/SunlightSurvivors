@@ -10,6 +10,18 @@ public class PlayerControls : MonoBehaviour
     public float jumpHeight = 10.0f;
     private bool isDead;
 
+    [Header("Dash")]
+    [SerializeField, Min(0.1f)] private float dashSpeed = 24f;
+    [SerializeField, Min(0.02f)] private float dashDuration = 0.2f;
+    private const float DashCooldown = 3f;
+    private Vector3 lastMoveDirection = Vector3.forward;
+    private Vector3 dashDirection;
+    private float dashEndTime;
+    private float nextDashTime;
+
+    public bool IsDashing => !isDead && Time.time < dashEndTime;
+    public float DashCooldownRemaining => Mathf.Max(0f, nextDashTime - Time.time);
+
     public const int MaxHealth = 10;
     public int CurrentHealth { get; private set; } = MaxHealth;
     public bool IsDead => isDead;
@@ -35,7 +47,7 @@ public class PlayerControls : MonoBehaviour
         GUI.depth = 10; // Keep the Game Over overlay in front of the health bar.
 
         float width = Mathf.Min(300f, Screen.width - 32f);
-        Rect panel = new Rect(16f, 16f, width, 78f);
+        Rect panel = new Rect(16f, 16f, width, 126f);
         GUI.color = new Color(0.08f, 0.1f, 0.14f, 0.9f);
         GUI.DrawTexture(panel, Texture2D.whiteTexture);
 
@@ -59,6 +71,22 @@ public class PlayerControls : MonoBehaviour
                 panel.y + 42f, segmentWidth, 22f), Texture2D.whiteTexture);
         }
 
+        float cooldown = DashCooldownRemaining;
+        GUI.color = isDead ? Color.gray : new Color(0.4f, 0.8f, 1f);
+        string dashLabel = isDead ? "DASH [SPACE]  --"
+            : IsDashing ? "DASH [SPACE]  ACTIVE"
+            : cooldown > 0f ? $"DASH [SPACE]  {cooldown:0.0}s"
+            : "DASH [SPACE]  READY";
+        GUI.Label(new Rect(panel.x + 12f, panel.y + 72f, width - 24f, 28f),
+            dashLabel, labelStyle);
+
+        GUI.color = new Color(0.22f, 0.25f, 0.3f);
+        Rect cooldownBar = new Rect(panel.x + 12f, panel.y + 106f, width - 24f, 6f);
+        GUI.DrawTexture(cooldownBar, Texture2D.whiteTexture);
+        cooldownBar.width *= isDead ? 0f : 1f - cooldown / DashCooldown;
+        GUI.color = new Color(0.3f, 0.75f, 1f);
+        GUI.DrawTexture(cooldownBar, Texture2D.whiteTexture);
+
         GUI.color = previousColor;
         GUI.depth = previousDepth;
     }
@@ -73,14 +101,45 @@ public class PlayerControls : MonoBehaviour
     {
         controller.Enable();
         playerBox = GetComponent<Rigidbody>();
+        playerBox.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     // Update is called once per frame
     void Update()
     {
-        dir2D = controller.ReadValue<Vector2>();
-        transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed * dir2D.y);
-        transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
+        if (isDead || Time.timeScale == 0f)
+        {
+            return;
+        }
+
+        dir2D = Vector2.ClampMagnitude(controller.ReadValue<Vector2>(), 1f);
+        if (!IsDashing && dir2D.sqrMagnitude > 0.01f)
+        {
+            lastMoveDirection = new Vector3(dir2D.x, 0f, dir2D.y).normalized;
+        }
+
+        if (!IsDashing && DashCooldownRemaining <= 0f &&
+            Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            dashDirection = lastMoveDirection;
+            dashEndTime = Time.time + dashDuration;
+            nextDashTime = Time.time + DashCooldown;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        // Drive the Rigidbody so fast movement still participates in collisions.
+        Vector3 movement = IsDashing
+            ? dashDirection * dashSpeed
+            : new Vector3(dir2D.x, 0f, dir2D.y) * playerSpeed;
+        playerBox.linearVelocity = new Vector3(
+            movement.x, playerBox.linearVelocity.y, movement.z);
     }
 
     private void OnCollisionEnter(Collision collision)
