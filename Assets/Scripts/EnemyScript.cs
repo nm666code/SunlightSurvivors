@@ -38,6 +38,9 @@ public class EnemyScript : MonoBehaviour
     private void FixedUpdate()
     {
         if (isDead || enemyBox == null) return;
+        // TimeFreeze only pins bodies that existed when it started, so enemies spawned
+        // mid-freeze would still chase, and frozen ones would still attack, without this.
+        if (TimeFreeze.IsFrozen) return;
         if (player == null || player.IsDead)
         {
             enemyBox.linearVelocity = new Vector3(0f, enemyBox.linearVelocity.y, 0f);
