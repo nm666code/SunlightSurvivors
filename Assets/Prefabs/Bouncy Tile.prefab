@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7848527429928265498}
   - component: {fileID: 3210901607245931767}
   - component: {fileID: 6653215241970611428}
-  - component: {fileID: -4015342266391664570}
   m_Layer: 0
   m_Name: Bouncy Tile
   m_TagString: Bouncy
@@ -114,15 +113,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &-4015342266391664570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6852270233906561347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 418ab3a650729c046b81f8e7bc98ad75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BounceObject

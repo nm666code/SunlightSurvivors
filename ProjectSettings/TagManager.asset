@@ -10,6 +10,7 @@ TagManager:
   - Powerup
   - Dummy
   - Safe
+  - slippery
   layers:
   - Default
   - TransparentFX
