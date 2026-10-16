@@ -1,8 +1,8 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class EnemyScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField, Min(1)] private int health = 1;
     private bool isDead;
@@ -20,29 +20,42 @@ public class EnemyScript : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    [Header("Automatic Attack")]
+    [SerializeField, Min(0.1f)] private float attackRange = 1.5f;
+    [SerializeField, Min(0.1f)] private float attackInterval = 1f;
+
     private Rigidbody enemyBox;
-    private GameObject playerObj;
-    public float jumpHeight = 1.0f; // Let's make the enemy jump when they touch bouncy tiles, shall we?
-    void Start()
+    private PlayerControls player;
+    private float nextAttackTime;
+    public float jumpHeight = 1.0f;
+
+    private void Start()
     {
         enemyBox = GetComponent<Rigidbody>();
-        playerObj = GameObject.Find("Player");
+        player = FindFirstObjectByType<PlayerControls>();
     }
 
-    // Update is called once per frame
     private void FixedUpdate()
     {
-        if (isDead || playerObj == null || enemyBox == null) return;
-        Vector3 direction = playerObj.transform.position - transform.position;
-        direction.y = 0f;
+        if (isDead || enemyBox == null) return;
+        if (player == null || player.IsDead)
+        {
+            enemyBox.linearVelocity = new Vector3(0f, enemyBox.linearVelocity.y, 0f);
+            return;
+        }
 
+        Vector3 offset = player.transform.position - transform.position;
+        Vector3 direction = new Vector3(offset.x, 0f, offset.z);
         Vector3 horizontalVelocity = direction.normalized * moveSpeed;
-
         enemyBox.linearVelocity = new Vector3(
-            horizontalVelocity.x,
-            enemyBox.linearVelocity.y,
-            horizontalVelocity.z
-        );
+            horizontalVelocity.x, enemyBox.linearVelocity.y, horizontalVelocity.z);
+
+        // Use full 3D distance so an enemy cannot hit a player far above it.
+        if (offset.sqrMagnitude <= attackRange * attackRange && Time.time >= nextAttackTime)
+        {
+            nextAttackTime = Time.time + Mathf.Max(0.1f, attackInterval);
+            player.TakeDamage(1);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
