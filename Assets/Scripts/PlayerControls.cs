@@ -9,6 +9,10 @@ public class PlayerControls : MonoBehaviour
     private Rigidbody playerBox; // Will be used for collision detection for enemy entities
     public float jumpHeight = 10.0f;
     private bool isDead;
+    private bool isSafe = false;
+    private bool isSlippery = false;
+    private Vector3 currentVelocity = Vector3.zero;
+    public float slipperyAcceleration = 2f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,8 +25,27 @@ public class PlayerControls : MonoBehaviour
     void Update()
     {
         dir2D = controller.ReadValue<Vector2>();
-        transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed * dir2D.y);
-        transform.Translate(Vector3.right * Time.deltaTime * playerSpeed * dir2D.x);
+
+        Vector3 targetVelocity = new Vector3(
+            dir2D.x,
+            0f,
+            dir2D.y
+        ) * playerSpeed;
+
+        if (isSlippery)
+        {
+            currentVelocity = Vector3.MoveTowards(
+                currentVelocity,
+                targetVelocity,
+                slipperyAcceleration * Time.deltaTime
+            );
+        }
+        else
+        {
+            currentVelocity = targetVelocity;
+        }
+
+        transform.Translate(currentVelocity * Time.deltaTime, Space.World);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -48,23 +71,38 @@ public class PlayerControls : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (IsFatalObject(collision.gameObject))
-        {
-            Die();
-        }
-        else if (collision.gameObject.CompareTag("Powerup"))
+        if (collision.gameObject.CompareTag("Powerup"))
         {
             Debug.Log("Picked up a powerup object");
         }
         else if (collision.gameObject.CompareTag("Safe"))
         {
+            isSafe = true;
             Debug.Log("Standing on the safe zone");
+        }
+        else if (IsFatalObject(collision.gameObject))
+        {
+            Die();
+        }
+    }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("Safe"))
+        {
+            isSafe = false;
+            Debug.Log("Left the safe zone");
         }
     }
 
     private bool IsFatalObject(GameObject other)
     {
         return other.CompareTag("Enemy") || other.name == "sunlight";
+    }
+
+    public void SetSlippery(bool slippery)
+    {
+        isSlippery = slippery;
     }
 
     public void Kill()
@@ -74,7 +112,7 @@ public class PlayerControls : MonoBehaviour
 
     private void Die()
     {
-        if (isDead)
+        if (isDead || isSafe)
         {
             return;
         }
