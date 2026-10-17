@@ -11,13 +11,15 @@ public class SpawnPowerup : MonoBehaviour
     [SerializeField, Min(0f)] private float initialDelay = 4f;
     [SerializeField, Min(0.1f)] private float spawnInterval = 10f;
     private float nextSpawn;
-    private float rangeX = 13, rangeZ = 13;
+    private float rangeX = 6, rangeZ = 6;
     private PlayerControls player;
     public string prefabName;
+    private string prefabTag;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        prefabTag = powerupPrefab.tag;
         nextSpawn = Time.time + initialDelay;
         player = FindFirstObjectByType<PlayerControls>();
         if (player == null || arena == null)
@@ -32,22 +34,19 @@ public class SpawnPowerup : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        // Don't spawn another powerup prefab if the player is currently invulnerable.
-        if (player == null || player.IsDead || Time.timeScale == 0f || Time.time < nextSpawn || player.isInvulnerable == true)
+        // Don't spawn another powerup prefab.
+        if (player == null || player.IsDead || Time.timeScale == 0f || Time.time < nextSpawn)
         {
             return;
         }
         nextSpawn = Time.time + spawnInterval;
-        if (GameObject.Find(prefabName))
+        if (GameObject.FindGameObjectsWithTag(prefabTag).Length > 0)
         {
             return;
         }
 
         Instantiate(powerupPrefab, SpawnRandomPosition(), powerupPrefab.transform.rotation);
     }
-
-    // Place any enemy prefab in any random position, but make sure none of them fall off the stage accidentally.
-    // Also, make sure that the enemy doesn't spawn too close to the player.
     private Vector3 SpawnRandomPosition()
     {
         float newX = Random.Range(-rangeX, rangeX), newZ = Random.Range(-rangeZ, rangeZ);

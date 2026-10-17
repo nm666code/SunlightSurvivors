@@ -1,6 +1,8 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem; // Needed to allow the player to move
+using UnityEngine.UI;
 
 public class PlayerControls : MonoBehaviour
 {
@@ -29,6 +31,7 @@ public class PlayerControls : MonoBehaviour
     private Vector3 dashDirection;
     private float dashEndTime;
     private float nextDashTime;
+    public TextMeshProUGUI invulnerableText;
 
     public bool IsDashing => !isDead && Time.time < dashEndTime;
     public float DashCooldownRemaining => Mathf.Max(0f, nextDashTime - Time.time);
@@ -105,6 +108,11 @@ public class PlayerControls : MonoBehaviour
         controller.Disable();
     }
 
+    private void UpdateInvulnerable(bool isActive, float duration)
+    {
+        invulnerableText.text = isActive ? "Invulnerable for " + Mathf.CeilToInt(duration) + " second(s)" : "";
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -117,6 +125,7 @@ public class PlayerControls : MonoBehaviour
         playerRenderer = GetComponent<Renderer>();
         playerRenderer.material = normalColor;
         isInvulnerable = false;
+        UpdateInvulnerable(false, 0);
     }
 
     // Update is called once per frame
@@ -206,7 +215,7 @@ public class PlayerControls : MonoBehaviour
             Die();
         }
         // Don't pickup another invulnerability powerup if the player is currently invulnerable.
-        else if (collision.gameObject.CompareTag("Powerup") && collision.gameObject.name.Contains("Invulnerable") && !isInvulnerable)
+        else if (collision.gameObject.name.Contains("Invulnerable") && !isInvulnerable)
         {
             Debug.Log("Picked up a powerup object and became invincible!");
             isInvulnerable = true;
@@ -220,7 +229,7 @@ public class PlayerControls : MonoBehaviour
             Debug.Log("Standing on the safe zone");
         }
         // The healing powerup only occurs if the player's current health is less than max health.
-        else if (collision.gameObject.CompareTag("Powerup") && collision.gameObject.name.Contains("Heal") && CurrentHealth < MaxHealth)
+        else if (collision.gameObject.name.Contains("Heal") && CurrentHealth < MaxHealth)
         {
             Debug.Log("Picked up a powerup object, healing the player.");
             // Careful when you update the value for the healing powerup. If too low, the game will be unwinnable.
@@ -278,8 +287,15 @@ public class PlayerControls : MonoBehaviour
     // After that number of seconds have passed in that coroutine, disable the invulnerability powerup.
     IEnumerator InvulnerableCoroutine()
     {
-        yield return new WaitForSeconds(5f);
+        float numSeconds = 5f;
+        while (numSeconds > 0)
+        {
+            UpdateInvulnerable(true, numSeconds);
+            yield return null;
+            numSeconds -= Time.deltaTime;
+        }
         isInvulnerable = false;
         playerRenderer.material = normalColor;
+        UpdateInvulnerable(false, 0);
     }
 }

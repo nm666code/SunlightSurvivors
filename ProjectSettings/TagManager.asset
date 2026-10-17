@@ -7,10 +7,11 @@ TagManager:
   - Obstacle
   - Enemy
   - Bouncy
-  - Powerup
   - Dummy
   - Safe
   - slippery
+  - PowerupHeal
+  - PowerupInvulnerable
   layers:
   - Default
   - TransparentFX
