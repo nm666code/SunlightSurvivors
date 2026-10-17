@@ -13,7 +13,7 @@ public class PlayerControls : MonoBehaviour
     private float groundHeight;
     private bool isDead;
     public bool IsDead => isDead;
-    public bool isInvulnerable; // If true, the player can't be harmed by an enemy or hazard.
+    public bool isInvulnerable; // If true, the player can't be harmed by an enemy but not for hazards
     private Renderer playerRenderer;
     public Material normalColor, invulnerableAura;
     private bool isSafe = false;
@@ -206,7 +206,7 @@ public class PlayerControls : MonoBehaviour
             Die();
         }
         // Don't pickup another invulnerability powerup if the player is currently invulnerable.
-        else if (collision.gameObject.CompareTag("Powerup") && !isInvulnerable)
+        else if (collision.gameObject.CompareTag("Powerup") && collision.gameObject.name.Contains("Invulnerable") && !isInvulnerable)
         {
             Debug.Log("Picked up a powerup object and became invincible!");
             isInvulnerable = true;
@@ -218,6 +218,21 @@ public class PlayerControls : MonoBehaviour
         {
             isSafe = true;
             Debug.Log("Standing on the safe zone");
+        }
+        // The healing powerup only occurs if the player's current health is less than max health.
+        else if (collision.gameObject.CompareTag("Powerup") && collision.gameObject.name.Contains("Heal") && CurrentHealth < MaxHealth)
+        {
+            Debug.Log("Picked up a powerup object, healing the player.");
+            // Careful when you update the value for the healing powerup. If too low, the game will be unwinnable.
+            int restoreHeal = 4;
+
+            // In case the current health will exceed the max health, set it back to the default max.
+            CurrentHealth += restoreHeal;
+            if (CurrentHealth > MaxHealth)
+            {
+                CurrentHealth = MaxHealth;
+            }
+            Destroy(collision.gameObject);
         }
     }
 
@@ -263,7 +278,7 @@ public class PlayerControls : MonoBehaviour
     // After that number of seconds have passed in that coroutine, disable the invulnerability powerup.
     IEnumerator InvulnerableCoroutine()
     {
-        yield return new WaitForSeconds(7.5f);
+        yield return new WaitForSeconds(5f);
         isInvulnerable = false;
         playerRenderer.material = normalColor;
     }

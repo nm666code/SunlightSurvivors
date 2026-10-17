@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3001815434626307917}
   - component: {fileID: 2615100220369056507}
   m_Layer: 0
-  m_Name: Powerup
+  m_Name: Heal
   m_TagString: Powerup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 24269d68ebe944845bb20933b118c515, type: 2}
+  - {fileID: 2100000, guid: b67f8d297e2ab2c48baedf53e3708d80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
